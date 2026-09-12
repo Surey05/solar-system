@@ -118,14 +118,6 @@ Open the project folder and launch `index.html` using a local development server
 
 </div>
 
----
-
-## 📸 Preview
-
-*Add screenshots or a GIF of the project here.*
-
----
-
 ## 🙌 Credits
 
 Planetary textures and astronomical visual references are credited to their respective creators and sources used during development.
