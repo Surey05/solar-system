@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+
+    <title>Solar System Explorer | SURENDIRAN S</title>
+
+    <meta
+      name="description"
+      content="Explore an interactive 3D Solar System with planetary textures, orbital guides, and educational interior cutaways. Created by SURENDIRAN S."
+    />
+
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: #000;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        outline: none;
+      }
+
+      /* Creator Credit Card */
+      #creator-credit {
+        position: fixed;
+        left: 14px;
+        bottom: 14px;
+        z-index: 5;
+        max-width: min(340px, calc(100vw - 28px));
+        box-sizing: border-box;
+        padding: 12px 16px;
+        color: #dce6f1;
+        background: rgba(8, 13, 21, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+        font: 13px/1.6 system-ui, sans-serif;
+      }
+
+      #creator-credit nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 4px;
+      }
+
+      #creator-credit a {
+        color: #a8cfff;
+        text-decoration: none;
+      }
+
+      #creator-credit a:hover {
+        text-decoration: underline;
+      }
+
+      #creator-credit small {
+        display: block;
+        margin-top: 5px;
+        color: #aab6c5;
+        font-size: 10px;
+      }
+
+      /* Help Button */
+     #help-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  border: 2px solid #00d2ff; /* Bright Cyan Border so it stands out */
+  border-radius: 50%;
+  background: rgba(10, 15, 25, 0.9);
+  color: #ffffff;
+  font: bold 22px/1 system-ui, sans-serif;
+  cursor: pointer;
+  z-index: 999999; /* Forces button to the absolute top layer */
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#help-toggle:hover {
+  background: #00d2ff;
+  color: #000000;
+}
+      /* Help Panel */
+      #help-panel {
+        position: fixed;
+        top: 64px;
+        left: 16px;
+        width: min(340px, calc(100vw - 32px));
+        box-sizing: border-box;
+        padding: 20px;
+        background: rgba(12, 17, 25, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 12px;
+        color: #edf2f7;
+        font: 13px/1.5 system-ui, sans-serif;
+        z-index: 5;
+      }
+
+      #help-panel[hidden] {
+        display: none;
+      }
+
+      #help-panel header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 12px;
+      }
+
+      #help-panel h2 {
+        margin: 0;
+        font-size: 18px;
+      }
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #05080d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+.loader-content {
+  text-align: center;
+  width: min(300px, 80vw);
+}
+
+.loader-content h1 {
+  font: 300 20px system-ui, sans-serif;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  color: #dce6f1;
+}
+
+#loading-bar-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#loading-bar {
+  width: 0%;
+  height: 100%;
+  background: #00d2ff;
+  transition: width 0.2s ease;
+}
+
+#loading-text {
+  font: 12px system-ui, sans-serif;
+  color: #8fa0b5;
+  margin-top: 10px;
+}
+      #help-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      .instructions-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .instruction-group h3 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #a9bdd4;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .instruction-group dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        row-gap: 6px;
+        column-gap: 16px;
+      }
+
+      .instruction-group dt {
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .instruction-group dd {
+        margin: 0;
+        color: #d0dbe8;
+      }
+
+      @media (max-width: 600px) {
+        #help-toggle {
+          top: 12px;
+          left: 12px;
+        }
+
+        #help-panel {
+          top: 60px;
+          left: 12px;
+          padding: 16px;
+        }
+
+        #creator-credit {
+          left: 8px;
+          bottom: 8px;
+          padding: 8px 10px;
+          font-size: 11px;
+        }
+      }
+
+      @media (hover: none) and (pointer: coarse) {
+        .keyboard-only {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Creator Credit -->
+    <footer id="creator-credit">
+      <span>
+        Created by <strong>SURENDIRAN S</strong>
+      </span>
+
+      <nav aria-label="Creator links">
+        <a
+          href="https://github.com/Surey05"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
+
+        <a
+          href="https://www.linkedin.com/in/surendiran-tech"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LinkedIn
+        </a>
+
+        <a href="mailto:surey0501@gmail.com">
+          Contact
+        </a>
+      </nav>
+
+      <small>
+        Educational visualization · Sizes and distances are not to scale
+      </small>
+
+      <small>
+        Planetary textures:
+        <a
+          href="https://www.solarsystemscope.com/textures/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Solar System Scope
+        </a>
+      </small>
+    </footer>
+
+    <!-- Help Button -->
+    <button id="help-toggle" type="button" aria-label="Open instructions">
+      ?
+    </button>
+
+    <!-- Help Modal -->
+    <aside id="help-panel" hidden>
+      <header>
+        <h2>How to navigate</h2>
+        <button id="help-close" type="button" aria-label="Close instructions">×</button>
+      </header>
+
+      <div class="instructions-grid">
+        <div class="instruction-group">
+          <h3>Mouse</h3>
+          <dl>
+            <dt>Rotate view</dt><dd>Left-click & drag</dd>
+            <dt>Zoom</dt><dd>Scroll wheel</dd>
+            <dt>Pan</dt><dd>Right-click & drag</dd>
+            <dt>Select</dt><dd>Click a planet</dd>
+          </dl>
+        </div>
+
+        <div class="instruction-group">
+          <h3>Touch (Mobile)</h3>
+          <dl>
+            <dt>Rotate view</dt><dd>Drag 1 finger</dd>
+            <dt>Zoom</dt><dd>Pinch 2 fingers</dd>
+            <dt>Pan</dt><dd>Drag 2 fingers</dd>
+            <dt>Select</dt><dd>Tap a planet</dd>
+          </dl>
+        </div>
+
+        <div class="instruction-group keyboard-only">
+          <h3>Keyboard Shortcuts</h3>
+          <dl>
+            <dt>0–8</dt><dd>Focus Sun / Planets</dd>
+            <dt>9</dt><dd>Focus Moon</dd>
+            <dt>H</dt><dd>Overview view</dd>
+            <dt>O</dt><dd>Toggle orbit lines</dd>
+            <dt>Space</dt><dd>Pause / Resume</dd>
+          </dl>
+        </div>
+      </div>
+    </aside>
+<!-- Loading Screen Overlay -->
+<div id="loading-screen">
+  <div class="loader-content">
+    <h1>Solar System Explorer</h1>
+    <div id="loading-bar-container">
+      <div id="loading-bar"></div>
+    </div>
+    <p id="loading-text">Loading textures... 0%</p>
+  </div>
+</div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
